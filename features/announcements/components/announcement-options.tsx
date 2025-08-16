@@ -15,6 +15,8 @@ import { Heading } from "@/components/ui/heading";
 import { useDeleteAnnouncementMutation } from "../api";
 import { useToastUtility } from "@/hooks/useToastUtility";
 import ApiError from "@/store/api-error";
+import { useState } from "react";
+import { AnnouncementForm } from "./announcement-form";
 
 export const AnnouncementOptions = ({
   announcement,
@@ -25,6 +27,7 @@ export const AnnouncementOptions = ({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) => {
+  const [showForm, setShowForm] = useState(false);
   const [deleteAnnouncement, { isLoading }] = useDeleteAnnouncementMutation();
   const toast = useToastUtility();
 
@@ -47,27 +50,41 @@ export const AnnouncementOptions = ({
   };
 
   return (
-    <Actionsheet isOpen={open} onClose={() => setOpen(false)}>
-      <ActionsheetBackdrop />
-      <ActionsheetContent className="pb-6">
-        <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator />
-        </ActionsheetDragIndicatorWrapper>
-        <ActionsheetItem>
-          <Icon as={Edit} />
-          <ActionsheetItemText>Edit Announcement</ActionsheetItemText>
-        </ActionsheetItem>
-        <ActionsheetItem onPress={handleDelete} isDisabled={isLoading}>
-          {!isLoading ? (
-            <Icon as={Trash2} className="text-error-500" />
-          ) : (
-            <ActivityIndicator size={"small"} color={"#fb2c36"} />
-          )}
-          <ActionsheetItemText className="text-error-500">
-            Delete Announcement
-          </ActionsheetItemText>
-        </ActionsheetItem>
-      </ActionsheetContent>
-    </Actionsheet>
+    <>
+      <Actionsheet isOpen={open} onClose={() => setOpen(false)}>
+        <ActionsheetBackdrop />
+        <ActionsheetContent className="pb-6">
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator />
+          </ActionsheetDragIndicatorWrapper>
+          <ActionsheetItem
+            onPress={() => {
+              setShowForm(true);
+            }}
+          >
+            <Icon as={Edit} />
+            <ActionsheetItemText>Edit Announcement</ActionsheetItemText>
+          </ActionsheetItem>
+          <ActionsheetItem onPress={handleDelete} isDisabled={isLoading}>
+            {!isLoading ? (
+              <Icon as={Trash2} className="text-error-500" />
+            ) : (
+              <ActivityIndicator size={"small"} color={"#fb2c36"} />
+            )}
+            <ActionsheetItemText className="text-error-500">
+              Delete Announcement
+            </ActionsheetItemText>
+          </ActionsheetItem>
+        </ActionsheetContent>
+      </Actionsheet>
+      {showForm && (
+        <AnnouncementForm
+          open={showForm}
+          setOpen={setShowForm}
+          announcement={announcement}
+          societyId={announcement.societyId!}
+        />
+      )}
+    </>
   );
 };

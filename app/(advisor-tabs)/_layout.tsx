@@ -162,7 +162,7 @@ const MenuTabIcon = () => {
   );
 };
 
-export default function StudentTabsLayout() {
+export default function AdvisorTabsLayout() {
   const { isAuthChecked, isAuthenticated, user, userType } = useAppSelector(
     (state) => state.auth
   );

@@ -1,4 +1,10 @@
-import { View, Text, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { Announcement } from "../types";
 import {
   Actionsheet,
@@ -62,7 +68,7 @@ export const AnnouncementForm = ({
     defaultValues: {
       title: announcement?.title ?? "",
       content: announcement?.content ?? "",
-      publishNow: !announcement?.publishDateTime || true,
+      publishNow: announcement?.publishDateTime ? false : true,
       publishDateTime: announcement?.publishDateTime
         ? new Date(announcement.publishDateTime)
         : undefined,
@@ -74,6 +80,7 @@ export const AnnouncementForm = ({
   const publishNow = form.watch("publishNow");
 
   const handleClose = () => {
+    form.reset();
     setOpen(false);
   };
 
@@ -92,6 +99,8 @@ export const AnnouncementForm = ({
         await createAnnouncement(body).unwrap();
 
         showSuccessToast("Successfully created announcement.");
+
+        handleClose();
       } catch (error) {
         const message =
           (error as ApiError).errorMessage ||
@@ -107,6 +116,8 @@ export const AnnouncementForm = ({
         }).unwrap();
 
         showSuccessToast("Successfully updated announcement.");
+
+        handleClose();
       } catch (error) {
         const message =
           (error as ApiError).errorMessage ||
@@ -123,7 +134,7 @@ export const AnnouncementForm = ({
     >
       <Actionsheet isOpen={open} onClose={handleClose}>
         <ActionsheetBackdrop />
-        <ActionsheetContent className="pb-6 max-h-[90%]">
+        <ActionsheetContent className="pb-6" style={{ maxHeight: "80%" }}>
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
@@ -140,220 +151,242 @@ export const AnnouncementForm = ({
               </Text>
             </VStack>
 
-            <VStack space="lg">
-              {/* Title Field */}
-              <FormControl isInvalid={!!form.formState.errors.title} isRequired>
-                <FormControlLabel>
-                  <FormControlLabelText>
-                    Announcement Title <Text className="text-red-500">*</Text>
-                  </FormControlLabelText>
-                </FormControlLabel>
-                <Controller
-                  control={form.control}
-                  name="title"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input
-                      variant="outline"
-                      className="border border-neutral-300 rounded-lg h-11"
-                    >
-                      <InputField
-                        placeholder="Hackathon Submission Deadline Extended"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                      />
-                    </Input>
-                  )}
-                />
-                {form.formState.errors.title && (
-                  <FormControlError>
-                    <FormControlErrorText>
-                      {form.formState.errors.title?.message}
-                    </FormControlErrorText>
-                  </FormControlError>
-                )}
-              </FormControl>
-
-              {/* Content Field */}
-              <FormControl isInvalid={!!form.formState.errors.content}>
-                <FormControlLabel>
-                  <FormControlLabelText>
-                    Announcement Content
-                  </FormControlLabelText>
-                </FormControlLabel>
-                <Controller
-                  control={form.control}
-                  name="content"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Textarea className="border border-neutral-300 rounded-lg min-h-20">
-                      <TextareaInput
-                        placeholder="Write announcement to make."
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        multiline
-                        numberOfLines={4}
-                        className="align-top"
-                      />
-                    </Textarea>
-                  )}
-                />
-                {form.formState.errors.content && (
-                  <FormControlError>
-                    <FormControlErrorText>
-                      {form.formState.errors.content?.message}
-                    </FormControlErrorText>
-                  </FormControlError>
-                )}
-              </FormControl>
-
-              {/* Publish Now Switch */}
-              <FormControl>
-                <View className="flex-row items-center justify-between rounded-lg border border-neutral-300 p-3">
-                  <View className="flex-1">
+            <View style={{ height: 400 }}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{
+                  flexGrow: 1,
+                }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                nestedScrollEnabled={true}
+              >
+                <VStack space="lg">
+                  {/* Title Field */}
+                  <FormControl
+                    isInvalid={!!form.formState.errors.title}
+                    isRequired
+                  >
                     <FormControlLabel>
-                      <FormControlLabelText className="font-medium">
-                        Publish Immediately?
+                      <FormControlLabelText>
+                        Announcement Title
                       </FormControlLabelText>
                     </FormControlLabel>
-                    <Text className="text-sm text-gray-600 mt-1">
-                      Enable this option to publish the announcement
-                      immediately.
-                    </Text>
-                  </View>
-                  <Controller
-                    control={form.control}
-                    name="publishNow"
-                    render={({ field: { onChange, value } }) => (
-                      <Switch
-                        value={value}
-                        onValueChange={onChange}
-                        className="ml-3"
-                      />
-                    )}
-                  />
-                </View>
-              </FormControl>
-
-              {/* Publish Date Time (conditional) */}
-              {!publishNow && (
-                <FormControl
-                  isInvalid={!!form.formState.errors.publishDateTime}
-                >
-                  <FormControlLabel>
-                    <FormControlLabelText>
-                      Publish Date & Time{" "}
-                      <Text className="text-red-500">*</Text>
-                    </FormControlLabelText>
-                  </FormControlLabel>
-                  <Controller
-                    control={form.control}
-                    name="publishDateTime"
-                    render={({ field: { onChange, value } }) => (
-                      <DateTimePicker
-                        value={value}
-                        onChange={onChange}
-                        disabled={(date) => {
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-                          return date < today;
-                        }}
-                      />
-                    )}
-                  />
-                  {form.formState.errors.publishDateTime && (
-                    <FormControlError>
-                      <FormControlErrorText>
-                        {form.formState.errors.publishDateTime?.message}
-                      </FormControlErrorText>
-                    </FormControlError>
-                  )}
-                </FormControl>
-              )}
-
-              {/* Audience Selection */}
-              <FormControl isInvalid={!!form.formState.errors.audience}>
-                <FormControlLabel>
-                  <FormControlLabelText>Audience</FormControlLabelText>
-                </FormControlLabel>
-                <Controller
-                  control={form.control}
-                  name="audience"
-                  render={({ field: { onChange, value } }) => (
-                    <RadioGroup value={value} onChange={onChange}>
-                      <HStack space="xl" className="mt-2">
-                        <Radio value="All" className="flex-row items-center">
-                          <RadioIndicator>
-                            <RadioIcon />
-                          </RadioIndicator>
-                          <RadioLabel className="ml-2">All Students</RadioLabel>
-                        </Radio>
-                        <Radio
-                          value="Members"
-                          className="flex-row items-center"
+                    <Controller
+                      control={form.control}
+                      name="title"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <Input
+                          variant="outline"
+                          className="border border-neutral-300 rounded-lg h-11"
                         >
-                          <RadioIndicator>
-                            <RadioIcon />
-                          </RadioIndicator>
-                          <RadioLabel className="ml-2">
-                            Society Members Only
-                          </RadioLabel>
-                        </Radio>
-                      </HStack>
-                    </RadioGroup>
-                  )}
-                />
-                {form.formState.errors.audience && (
-                  <FormControlError>
-                    <FormControlErrorText>
-                      {form.formState.errors.audience?.message}
-                    </FormControlErrorText>
-                  </FormControlError>
-                )}
-              </FormControl>
+                          <InputField
+                            placeholder="Hackathon Submission Deadline Extended"
+                            value={value}
+                            onChangeText={onChange}
+                            onBlur={onBlur}
+                          />
+                        </Input>
+                      )}
+                    />
+                    {form.formState.errors.title && (
+                      <FormControlError>
+                        <FormControlErrorText>
+                          {form.formState.errors.title?.message}
+                        </FormControlErrorText>
+                      </FormControlError>
+                    )}
+                  </FormControl>
 
-              {/* Send Email Switch */}
-              <FormControl>
-                <View className="flex-row items-center justify-between rounded-lg border border-neutral-300 p-3">
-                  <View className="flex-1">
+                  {/* Content Field */}
+                  <FormControl isInvalid={!!form.formState.errors.content}>
                     <FormControlLabel>
-                      <FormControlLabelText className="font-medium">
-                        Send Email?
+                      <FormControlLabelText>
+                        Announcement Content
                       </FormControlLabelText>
                     </FormControlLabel>
-                    <Text className="text-sm text-gray-600 mt-1">
-                      Enable this option to send an email notification to your
-                      audience.
-                    </Text>
-                  </View>
-                  <Controller
-                    control={form.control}
-                    name="sendEmail"
-                    render={({ field: { onChange, value } }) => (
-                      <Switch
-                        value={value}
-                        onValueChange={onChange}
-                        className="ml-3"
-                      />
+                    <Controller
+                      control={form.control}
+                      name="content"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <Textarea className="border border-neutral-300 rounded-lg min-h-20">
+                          <TextareaInput
+                            placeholder="Write announcement to make."
+                            value={value}
+                            onChangeText={onChange}
+                            onBlur={onBlur}
+                            multiline
+                            numberOfLines={4}
+                            className="align-top"
+                          />
+                        </Textarea>
+                      )}
+                    />
+                    {form.formState.errors.content && (
+                      <FormControlError>
+                        <FormControlErrorText>
+                          {form.formState.errors.content?.message}
+                        </FormControlErrorText>
+                      </FormControlError>
                     )}
-                  />
-                </View>
-              </FormControl>
-            </VStack>
+                  </FormControl>
+
+                  {/* Publish Now Switch */}
+                  <FormControl>
+                    <View className="flex-row items-center justify-between rounded-lg border border-neutral-300 p-3">
+                      <View className="flex-1">
+                        <FormControlLabel>
+                          <FormControlLabelText className="font-medium">
+                            Publish Immediately?
+                          </FormControlLabelText>
+                        </FormControlLabel>
+                        <Text className="text-sm text-gray-600 mt-1">
+                          Enable this option to publish the announcement
+                          immediately.
+                        </Text>
+                      </View>
+                      <Controller
+                        control={form.control}
+                        name="publishNow"
+                        render={({ field: { onChange, value } }) => (
+                          <Switch
+                            trackColor={{ false: "#d1d5db", true: "#7ab9ff" }}
+                            thumbColor={"#218bff"}
+                            value={value}
+                            onValueChange={onChange}
+                            className="ml-3"
+                          />
+                        )}
+                      />
+                    </View>
+                  </FormControl>
+
+                  {/* Publish Date Time (conditional) */}
+                  {!publishNow && (
+                    <FormControl
+                      isInvalid={!!form.formState.errors.publishDateTime}
+                    >
+                      <FormControlLabel>
+                        <FormControlLabelText>
+                          Publish Date & Time{" "}
+                          <Text className="text-red-500">*</Text>
+                        </FormControlLabelText>
+                      </FormControlLabel>
+                      <Controller
+                        control={form.control}
+                        name="publishDateTime"
+                        render={({ field: { onChange, value } }) => (
+                          <DateTimePicker
+                            value={value}
+                            onChange={onChange}
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              return date < today;
+                            }}
+                          />
+                        )}
+                      />
+                      {form.formState.errors.publishDateTime && (
+                        <FormControlError>
+                          <FormControlErrorText>
+                            {form.formState.errors.publishDateTime?.message}
+                          </FormControlErrorText>
+                        </FormControlError>
+                      )}
+                    </FormControl>
+                  )}
+
+                  {/* Audience Selection */}
+                  <FormControl isInvalid={!!form.formState.errors.audience}>
+                    <FormControlLabel>
+                      <FormControlLabelText>Audience</FormControlLabelText>
+                    </FormControlLabel>
+                    <Controller
+                      control={form.control}
+                      name="audience"
+                      render={({ field: { onChange, value } }) => (
+                        <RadioGroup value={value} onChange={onChange}>
+                          <HStack space="xl" className="mt-2">
+                            <Radio
+                              value="All"
+                              className="flex-row items-center"
+                            >
+                              <RadioIndicator>
+                                <RadioIcon />
+                              </RadioIndicator>
+                              <RadioLabel className="ml-2">
+                                All Students
+                              </RadioLabel>
+                            </Radio>
+                            <Radio
+                              value="Members"
+                              className="flex-row items-center"
+                            >
+                              <RadioIndicator>
+                                <RadioIcon />
+                              </RadioIndicator>
+                              <RadioLabel className="ml-2">
+                                Society Members Only
+                              </RadioLabel>
+                            </Radio>
+                          </HStack>
+                        </RadioGroup>
+                      )}
+                    />
+                    {form.formState.errors.audience && (
+                      <FormControlError>
+                        <FormControlErrorText>
+                          {form.formState.errors.audience?.message}
+                        </FormControlErrorText>
+                      </FormControlError>
+                    )}
+                  </FormControl>
+
+                  {/* Send Email Switch */}
+                  <FormControl>
+                    <View className="flex-row items-center justify-between rounded-lg border border-neutral-300 p-3">
+                      <View className="flex-1">
+                        <FormControlLabel>
+                          <FormControlLabelText className="font-medium">
+                            Send Email?
+                          </FormControlLabelText>
+                        </FormControlLabel>
+                        <Text className="text-sm text-gray-600 mt-1">
+                          Enable this option to send an email notification to
+                          your audience.
+                        </Text>
+                      </View>
+                      <Controller
+                        control={form.control}
+                        name="sendEmail"
+                        render={({ field: { onChange, value } }) => (
+                          <Switch
+                            value={value}
+                            onValueChange={onChange}
+                            className="ml-3"
+                          />
+                        )}
+                      />
+                    </View>
+                  </FormControl>
+                </VStack>
+              </ScrollView>
+            </View>
 
             {/* Action Buttons */}
             <HStack space="md" className="justify-end mt-6">
               <Button
                 variant="outline"
                 onPress={handleClose}
-                disabled={isLoading || isUpdating}
+                isDisabled={isLoading || isUpdating}
                 className="flex-1"
               >
                 <ButtonText>Cancel</ButtonText>
               </Button>
               <Button
                 onPress={form.handleSubmit(handleSubmit)}
-                disabled={isLoading || isUpdating}
+                isDisabled={isLoading || isUpdating}
                 className="flex-1"
               >
                 <ButtonText>

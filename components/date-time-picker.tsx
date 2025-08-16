@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Platform } from "react-native";
-import Picker from "@react-native-community/datetimepicker";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { Calendar, Clock } from "lucide-react-native"; // Assuming you have lucide-react-native
 
 interface DateTimePickerProps {
@@ -133,7 +133,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
       {/* Date Picker */}
       {showDatePicker && (
-        <Picker
+        <RNDateTimePicker
           testID="dateTimePicker"
           value={tempDate || value || new Date()}
           mode="date"
@@ -147,7 +147,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
       {/* Time Picker */}
       {showTimePicker && (
-        <Picker
+        <RNDateTimePicker
           testID="dateTimePicker"
           value={tempDate || value || new Date()}
           mode="time"
@@ -160,7 +160,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       {/* For iOS datetime mode, show both pickers */}
       {Platform.OS === "ios" && mode === "datetime" && showDatePicker && (
         <View className="mt-2">
-          <Picker
+          <RNDateTimePicker
             testID="timePicker"
             value={tempDate || value || new Date()}
             mode="time"
