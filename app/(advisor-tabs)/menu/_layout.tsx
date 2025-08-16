@@ -12,6 +12,7 @@ export default function MenuLayout() {
         name="announcements"
         options={{ header: () => <Header title="Announcements" backButton /> }}
       />
+      <Stack.Screen name="chats" options={{ headerShown: false }} />
     </Stack>
   );
 }

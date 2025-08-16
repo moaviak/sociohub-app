@@ -25,6 +25,7 @@ import {
   initializePushNotifications,
   refreshTokenIfNeeded,
 } from "@/features/notifications/push-notifications";
+import { cn } from "@/lib/utils";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -208,14 +209,23 @@ export default function RootLayout() {
 export const Header = ({
   title,
   backButton,
+  children,
+  className,
 }: {
   title: string;
   backButton?: boolean;
+  children?: React.ReactNode;
+  className?: string;
 }) => {
   const router = useRouter();
 
   return (
-    <View className="flex-row items-center px-4 py-3 bg-white border-b border-neutral-300">
+    <View
+      className={cn(
+        "flex-row items-center px-4 py-3 bg-white border-b border-neutral-300",
+        className
+      )}
+    >
       {backButton && (
         <TouchableOpacity
           onPress={() => router.back()}
@@ -226,6 +236,7 @@ export const Header = ({
         </TouchableOpacity>
       )}
       <Text className="text-xl font-heading font-bold flex-1">{title}</Text>
+      {children}
     </View>
   );
 };

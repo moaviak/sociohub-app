@@ -1,4 +1,3 @@
-import { Header } from "@/app/_layout";
 import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import { useAppSelector } from "@/store/hooks";
@@ -9,6 +8,7 @@ import {
   CircleDollarSign,
   ImagePlus,
   Megaphone,
+  MessageCircleMore,
   Settings,
   ShieldHalf,
 } from "lucide-react-native";
@@ -19,6 +19,12 @@ const MenuPage = () => {
   const router = useRouter();
 
   const routes = [
+    {
+      key: "chats",
+      label: "Chats",
+      icon: MessageCircleMore,
+      pathname: "/(advisor-tabs)/menu/chats",
+    },
     {
       key: "profile",
       label: "Society Profile",

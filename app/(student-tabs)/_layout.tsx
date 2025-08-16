@@ -213,6 +213,21 @@ export default function StudentTabsLayout() {
             headerShown: false,
             tabBarActiveTintColor: "#218bff",
             tabBarInactiveTintColor: "#7a7a7a",
+            tabBarHideOnKeyboard: true,
+            tabBarVisibilityAnimationConfig: {
+              show: {
+                animation: "timing",
+                config: {
+                  duration: 0,
+                },
+              },
+              hide: {
+                animation: "timing",
+                config: {
+                  duration: 0,
+                },
+              },
+            },
             tabBarStyle: {
               height: 72,
               paddingTop: 12,
