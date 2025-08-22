@@ -87,7 +87,7 @@ const RegistrationForm = ({ societyId }: { societyId?: string }) => {
   if (!society) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size={"large"} />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }

@@ -9,7 +9,7 @@ export const MyEvents = () => {
   if (isLoading) {
     return (
       <View className="p-6">
-        <ActivityIndicator />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }

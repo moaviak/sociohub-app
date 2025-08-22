@@ -198,7 +198,7 @@ export default function AdvisorTabsLayout() {
   if (!isAuthChecked || !isAuthenticated) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );
   }
@@ -218,7 +218,7 @@ export default function AdvisorTabsLayout() {
               show: {
                 animation: "timing",
                 config: {
-                  duration: 0,
+                  duration: 300,
                 },
               },
               hide: {

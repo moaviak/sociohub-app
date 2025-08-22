@@ -27,7 +27,7 @@ import {
 } from "lucide-react-native";
 import { cn } from "@/lib/utils";
 import { RolesBadges } from "../members/components/roles-badges";
-import { Role, Society } from "@/types";
+import { Role, Society, UserType } from "@/types";
 import { useAppSelector } from "@/store/hooks";
 import { SocietyLogo } from "@/components/society-logo";
 import {
@@ -38,6 +38,8 @@ import {
 import { format } from "date-fns";
 import { useRouter } from "expo-router";
 import { EventTabs } from "./components/event-tabs";
+import { useCreateOneToOneChatMutation } from "../chats/api";
+import { useToastUtility } from "@/hooks/useToastUtility";
 
 interface InfoRowProps {
   icon: LucideIcon;
@@ -113,9 +115,15 @@ const SocietyCard: React.FC<{
 );
 
 const Profile = ({ userId }: { userId: string }) => {
-  const { user: currentUser } = useAppSelector((state) => state.auth);
+  const { user: currentUser, userType: currentUserType } = useAppSelector(
+    (state) => state.auth
+  );
   const { data: user, isLoading } = useGetUserByIdQuery({ id: userId });
 
+  const [createChat, { isLoading: isCreatingChat }] =
+    useCreateOneToOneChatMutation();
+
+  const toast = useToastUtility();
   const router = useRouter();
 
   if (isLoading) {
@@ -138,6 +146,21 @@ const Profile = ({ userId }: { userId: string }) => {
   const isOwnProfile = currentUser?.id === user.id;
   const isStudent = "registrationNumber" in user;
   const userType = isStudent ? "Student" : "Advisor";
+
+  const handleSendMessage = async () => {
+    try {
+      const chat = await createChat(userId).unwrap();
+      router.push({
+        pathname:
+          currentUserType === UserType.STUDENT
+            ? "/(student-tabs)/chats/[id]"
+            : "/(advisor-tabs)/home/chats/[id]",
+        params: { id: chat.id },
+      });
+    } catch (error) {
+      toast.showErrorToast("Unable to start conversation.");
+    }
+  };
 
   return (
     <ScrollView
@@ -197,7 +220,13 @@ const Profile = ({ userId }: { userId: string }) => {
                     <ButtonText>Edit Profile</ButtonText>
                   </Button>
                 ) : (
-                  <Button variant="outline" size="sm" className="rounded-lg">
+                  <Button
+                    onPress={handleSendMessage}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg"
+                    isDisabled={isCreatingChat}
+                  >
                     <Icon
                       as={MessageCircleMore}
                       className="text-primary-500 mr-2"

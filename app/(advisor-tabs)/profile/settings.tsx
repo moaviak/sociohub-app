@@ -6,6 +6,7 @@ import { useLogoutMutation } from "@/store/auth/api";
 import { useRouter } from "expo-router";
 import { ChevronRight, LogOut, UserPen } from "lucide-react-native";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { handleLogout as deleteToken } from "@/features/notifications/push-notifications";
 
 const Settings = () => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const Settings = () => {
       const deviceId = await getDeviceId();
 
       await logout({ deviceId: deviceId ?? undefined }).unwrap();
+      await deleteToken();
     } catch (error) {
       showErrorToast("Error logging out. Please try again");
     }

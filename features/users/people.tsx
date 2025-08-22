@@ -13,12 +13,24 @@ import { UserAvatar } from "@/components/user-avatar";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { useAppSelector } from "@/store/hooks";
 import { IOScrollView, InView } from "react-native-intersection-observer";
+import { useCreateOneToOneChatMutation } from "../chats/api";
+import { useToastUtility } from "@/hooks/useToastUtility";
+import { useRouter } from "expo-router";
+import { UserType } from "@/types";
 
 const People = () => {
-  const currentUser = useAppSelector((state) => state.auth.user);
+  const { user: currentUser, userType: currentUserType } = useAppSelector(
+    (state) => state.auth
+  );
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
   const debouncedSetSearch = useDebounceCallback(setSearch, 300);
+
+  const [createChat, { isLoading: isCreatingChat }] =
+    useCreateOneToOneChatMutation();
+
+  const toast = useToastUtility();
+  const router = useRouter();
 
   const {
     data,
@@ -52,6 +64,21 @@ const People = () => {
   const handleInputChange = (text: string) => {
     setInput(text);
     debouncedSetSearch(text);
+  };
+
+  const handleSendMessage = async (userId: string) => {
+    try {
+      const chat = await createChat(userId).unwrap();
+      router.push({
+        pathname:
+          currentUserType === UserType.STUDENT
+            ? "/(student-tabs)/chats/[id]"
+            : "/(advisor-tabs)/home/chats/[id]",
+        params: { id: chat.id },
+      });
+    } catch (error) {
+      toast.showErrorToast("Unable to start conversation.");
+    }
   };
 
   const renderLoadingFooter = () => {
@@ -107,7 +134,12 @@ const People = () => {
                 >
                   <UserAvatar user={user} />
                   {user.id !== currentUser?.id && (
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onPress={() => handleSendMessage(user.id)}
+                      isDisabled={isCreatingChat}
+                    >
                       <ButtonIcon
                         as={MessageCircleMore}
                         className="text-primary-500"

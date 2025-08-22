@@ -7,7 +7,10 @@
     "icon": "./assets/images/icon.png",
     "scheme": "sociohub",
     "linking": {
-      "prefixes": ["sociohub://", "https://sociohub.site"]
+      "prefixes": [
+        "sociohub://",
+        "https://sociohub.site"
+      ]
     },
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -67,7 +70,9 @@
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false
         }
-      ]
+      ],
+      "react-native-video",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true

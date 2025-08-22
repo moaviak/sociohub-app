@@ -1,15 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
-import AuthReducer from "./auth/slice";
 import NotificationsReducer from "@/features/notifications/slice";
+import ChatsReducer from "@/features/chats/slice";
 import { api } from "./api";
+import AuthReducer from "./auth/slice";
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
     auth: AuthReducer,
     notifications: NotificationsReducer,
+    chats: ChatsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware),

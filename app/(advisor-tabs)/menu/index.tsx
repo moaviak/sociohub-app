@@ -20,12 +20,6 @@ const MenuPage = () => {
 
   const routes = [
     {
-      key: "chats",
-      label: "Chats",
-      icon: MessageCircleMore,
-      pathname: "/(advisor-tabs)/menu/chats",
-    },
-    {
       key: "profile",
       label: "Society Profile",
       icon: Building,

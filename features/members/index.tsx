@@ -53,7 +53,7 @@ const Members = () => {
         <VStack>
           {shouldShowLoading ? (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="small" />
+              <ActivityIndicator size="large" color="#3b82f6" />
             </View>
           ) : members && members.length > 0 ? (
             // Render actual society cards when we have results

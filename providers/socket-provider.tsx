@@ -1,11 +1,24 @@
 import {
+  addMessageWithRefresh,
+  deleteMessage,
+  handleChatDeletionOrLeave,
+  removeChatParticipant,
+  setOnlineUsers,
+  setUserOffline,
+  setUserOnline,
+  startTyping,
+  stopTyping,
+} from "@/features/chats/slice";
+import { Message } from "@/features/chats/types";
+import {
   addNotification,
   setUnreadCount,
 } from "@/features/notifications/slice";
 import { useToastUtility } from "@/hooks/useToastUtility";
 import { disconnectSocket, getSocket, initializeSocket } from "@/lib/socket";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Notification } from "@/types";
+import { Notification, UserType } from "@/types";
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const SocketProvider = ({ children }: { children: React.ReactNode }) => {
@@ -17,9 +30,14 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const authErrorRef = useRef(false);
 
   const { showNotificationToast } = useToastUtility();
+  const router = useRouter();
 
   // Get authentication token from Redux
-  const { accessToken: token } = useAppSelector((state) => state.auth);
+  const { accessToken: token, userType } = useAppSelector(
+    (state) => state.auth
+  );
+
+  const { activeChat } = useAppSelector((state) => state.chats);
 
   const initializeSocketConnection = useCallback(() => {
     if (!token) {
@@ -57,6 +75,57 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       socket.on("new-notification", (notification: Notification) => {
         dispatch(addNotification(notification));
         showNotificationToast(notification);
+      });
+
+      // Listen for message events
+      socket.on("new-message", (message: Message) => {
+        dispatch(addMessageWithRefresh(message));
+      });
+
+      socket.on("delete-message", ({ messageId, chatId }) => {
+        dispatch(deleteMessage({ messageId, chatId }));
+      });
+
+      socket.on("chat-deleted", ({ chatId }) => {
+        if (activeChat?.id === chatId) {
+          userType === UserType.STUDENT
+            ? router.replace("/(student-tabs)/chats")
+            : router.replace("/(advisor-tabs)/home/chats");
+        }
+        dispatch(handleChatDeletionOrLeave());
+      });
+
+      socket.on("group-deleted", ({ chatId }) => {
+        if (activeChat?.id === chatId) {
+          userType === UserType.STUDENT
+            ? router.replace("/(student-tabs)/chats")
+            : router.replace("/(advisor-tabs)/home/chats");
+        }
+        dispatch(handleChatDeletionOrLeave());
+      });
+
+      socket.on("group-left", ({ chatId, userId }) => {
+        dispatch(removeChatParticipant({ chatId, userId }));
+      });
+
+      socket.on("chat-partners-status", (statuses) => {
+        dispatch(setOnlineUsers(statuses));
+      });
+
+      socket.on("user-online", ({ userId }) => {
+        dispatch(setUserOnline(userId));
+      });
+
+      socket.on("user-offline", ({ userId }) => {
+        dispatch(setUserOffline(userId));
+      });
+
+      socket.on("typing", ({ chatId, userId }) => {
+        dispatch(startTyping({ chatId, userId }));
+      });
+
+      socket.on("stop-typing", ({ chatId, userId }) => {
+        dispatch(stopTyping({ chatId, userId }));
       });
 
       // Listen for connection errors

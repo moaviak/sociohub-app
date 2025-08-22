@@ -21,7 +21,7 @@ const NotificationIcon = () => {
 
   return (
     <TouchableOpacity
-      className="relative mr-4"
+      className="relative"
       onPress={() =>
         router.push(
           userType === UserType.STUDENT
