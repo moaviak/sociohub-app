@@ -120,7 +120,7 @@ const CustomDrawerContent = ({ navigation }: any) => {
     navigation.closeDrawer();
     router.push({
       pathname: pathname as RelativePathString,
-      params: { societyId },
+      params: { societyId, id: societyId },
     });
   };
 

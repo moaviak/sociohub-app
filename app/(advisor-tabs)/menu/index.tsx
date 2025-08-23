@@ -7,6 +7,7 @@ import {
   Building,
   CircleDollarSign,
   ImagePlus,
+  ListTodo,
   Megaphone,
   MessageCircleMore,
   Settings,
@@ -19,6 +20,12 @@ const MenuPage = () => {
   const router = useRouter();
 
   const routes = [
+    {
+      key: "to-do",
+      label: "To-Do List",
+      icon: ListTodo,
+      pathname: "/(advisor-tabs)/menu/to-do",
+    },
     {
       key: "profile",
       label: "Society Profile",

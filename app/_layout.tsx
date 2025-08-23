@@ -26,6 +26,7 @@ import {
   refreshTokenIfNeeded,
 } from "@/features/notifications/push-notifications";
 import { cn } from "@/lib/utils";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -189,15 +190,18 @@ export default function RootLayout() {
       <SocketProvider>
         <AuthProvider>
           <GluestackUIProvider mode="light">
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="auth" />
-              <Stack.Screen name="(student-tabs)" />
-              <Stack.Screen name="(advisor-tabs)" />
-              <Stack.Screen name="society/[id]" />
-              <Stack.Screen name="profile/[id]" />
-              <Stack.Screen name="event/[id]" />
-            </Stack>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="auth" />
+                <Stack.Screen name="(student-tabs)" />
+                <Stack.Screen name="(advisor-tabs)" />
+                <Stack.Screen name="society/[id]" />
+                <Stack.Screen name="profile/[id]" />
+                <Stack.Screen name="event/[id]" />
+                <Stack.Screen name="edit-post/[id]" />
+              </Stack>
+            </GestureHandlerRootView>
             <StatusBar style="auto" />
           </GluestackUIProvider>
         </AuthProvider>

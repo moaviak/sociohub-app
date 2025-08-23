@@ -12,6 +12,18 @@ export default function MenuLayout() {
         name="announcements"
         options={{ header: () => <Header title="Announcements" backButton /> }}
       />
+      <Stack.Screen
+        name="create-post"
+        options={{
+          header: () => <Header title="Create New Post" backButton />,
+        }}
+      />
+      <Stack.Screen
+        name="to-do"
+        options={{
+          header: () => <Header title="To-Do List" backButton />,
+        }}
+      />
     </Stack>
   );
 }

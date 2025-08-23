@@ -1,9 +1,10 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 
 import { icons } from "@/constants";
 import { VStack } from "@/components/ui/vstack";
 import { ScanTicket } from "@/components/menu/scan-ticket/scan-ticket";
 import { useAppSelector } from "@/store/hooks";
+import { router } from "expo-router";
 
 const MenuPage = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -26,6 +27,22 @@ const MenuPage = () => {
             <View className="w-full h-0.5 bg-neutral-200" />
           </View>
         )}
+        <View className="gap-2">
+          <TouchableOpacity
+            onPress={() => router.push("/(student-tabs)/menu/to-do")}
+          >
+            <View className="flex-row items-center gap-4 px-4 py-2">
+              <Image
+                source={require("@/assets/icons/tasks.png")}
+                className="h-[32px] w-[32px]"
+              />
+              <Text className="font-body font-semibold text-lg">
+                To-Do List
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <View className="w-full h-0.5 bg-neutral-200" />
+        </View>
       </VStack>
     </View>
   );

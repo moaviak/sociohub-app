@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const TabIcon = ({
@@ -204,105 +203,103 @@ export default function AdvisorTabsLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }} className="bg-white">
-        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-        <Tabs
-          screenOptions={{
-            tabBarShowLabel: false,
-            headerShown: false,
-            tabBarActiveTintColor: "#218bff",
-            tabBarInactiveTintColor: "#7a7a7a",
-            tabBarHideOnKeyboard: true,
-            tabBarVisibilityAnimationConfig: {
-              show: {
-                animation: "timing",
-                config: {
-                  duration: 300,
-                },
-              },
-              hide: {
-                animation: "timing",
-                config: {
-                  duration: 0,
-                },
+    <SafeAreaView style={{ flex: 1 }} className="bg-white">
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <Tabs
+        screenOptions={{
+          tabBarShowLabel: false,
+          headerShown: false,
+          tabBarActiveTintColor: "#218bff",
+          tabBarInactiveTintColor: "#7a7a7a",
+          tabBarHideOnKeyboard: true,
+          tabBarVisibilityAnimationConfig: {
+            show: {
+              animation: "timing",
+              config: {
+                duration: 300,
               },
             },
-            tabBarStyle: {
-              height: 72,
-              paddingTop: 12,
-              paddingBottom: 8,
-              paddingHorizontal: 16,
-              backgroundColor: "#fff",
-              elevation: 10,
+            hide: {
+              animation: "timing",
+              config: {
+                duration: 0,
+              },
             },
+          },
+          tabBarStyle: {
+            height: 72,
+            paddingTop: 12,
+            paddingBottom: 8,
+            paddingHorizontal: 16,
+            backgroundColor: "#fff",
+            elevation: 10,
+          },
+        }}
+      >
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.home}
+                color={color}
+                focused={focused}
+                name="Home"
+              />
+            ),
           }}
-        >
-          <Tabs.Screen
-            name="home"
-            options={{
-              title: "Home",
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon
-                  icon={icons.home}
-                  color={color}
-                  focused={focused}
-                  name="Home"
-                />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="members"
-            options={{
-              title: "Members",
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon
-                  icon={icons.members}
-                  color={color}
-                  focused={focused}
-                  name="Members"
-                />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="menu"
-            options={{
-              title: "Menu",
-              tabBarIcon: () => <MenuTabIcon />,
-            }}
-          />
-          <Tabs.Screen
-            name="events"
-            options={{
-              title: "Events",
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon
-                  icon={icons.events}
-                  color={color}
-                  focused={focused}
-                  name="Events"
-                />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="profile"
-            options={{
-              title: "Profile",
-              tabBarIcon: ({ color, focused }) => (
-                <ProfileTabIcon
-                  icon={user?.avatar || images.avatar}
-                  color={color}
-                  focused={focused}
-                  name="Profile"
-                />
-              ),
-            }}
-          />
-        </Tabs>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+        />
+        <Tabs.Screen
+          name="members"
+          options={{
+            title: "Members",
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.members}
+                color={color}
+                focused={focused}
+                name="Members"
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="menu"
+          options={{
+            title: "Menu",
+            tabBarIcon: () => <MenuTabIcon />,
+          }}
+        />
+        <Tabs.Screen
+          name="events"
+          options={{
+            title: "Events",
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.events}
+                color={color}
+                focused={focused}
+                name="Events"
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: "Profile",
+            tabBarIcon: ({ color, focused }) => (
+              <ProfileTabIcon
+                icon={user?.avatar || images.avatar}
+                color={color}
+                focused={focused}
+                name="Profile"
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </SafeAreaView>
   );
 }

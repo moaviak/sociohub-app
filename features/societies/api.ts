@@ -1,10 +1,29 @@
 import { api } from "@/store/api";
-import ApiError, { ApiErrorResponse, createApiError } from "@/store/api-error";
+import { ApiErrorResponse, createApiError } from "@/store/api-error";
 import { ApiResponse } from "@/store/api-response";
 import { JoinRequest, Society } from "@/types";
 
 export const SocietiesApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getSociety: builder.query<Society, { societyId: string }>({
+      query: ({ societyId }) => ({
+        url: `/society/${societyId}`,
+      }),
+      transformResponse: (response: ApiResponse<Society>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      providesTags: (result) => {
+        if (result) {
+          return [{ type: "Societies", id: result.id }];
+        } else {
+          return [];
+        }
+      },
+    }),
     getSocieties: builder.query<
       (Society & { isMember: boolean; hasRequestedToJoin: boolean })[],
       { search?: string }
@@ -96,6 +115,7 @@ export const SocietiesApi = api.injectEndpoints({
 });
 
 export const {
+  useGetSocietyQuery,
   useGetSocietiesQuery,
   useCancelJoinRequestMutation,
   useSendJoinRequestMutation,
