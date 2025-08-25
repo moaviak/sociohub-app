@@ -48,12 +48,6 @@ const MenuPage = () => {
       pathname: "/(advisor-tabs)/menu/teams",
     },
     {
-      key: "payments",
-      label: "Payments",
-      icon: CircleDollarSign,
-      pathname: "/(advisor-tabs)/menu/payments",
-    },
-    {
       key: "create-post",
       label: "Create Post",
       icon: ImagePlus,

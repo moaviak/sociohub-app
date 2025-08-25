@@ -97,7 +97,7 @@ export const MessageList = ({
         return (
           <View key={userId} className="flex-row gap-2 px-6 pb-4">
             <Avatar size="sm">
-              <AvatarFallbackText>
+              <AvatarFallbackText className="text-white">
                 {`${typingUser?.firstName?.[0] || ""}${
                   typingUser?.lastName?.[0] || ""
                 }`}

@@ -114,7 +114,9 @@ const ChatHeader = ({ chat }: { chat: Chat }) => {
         className="flex-1 gap-3 items-center flex-row"
       >
         <Avatar className="w-12 h-12">
-          <AvatarFallbackText>{getFallback()}</AvatarFallbackText>
+          <AvatarFallbackText className="text-white">
+            {getFallback()}
+          </AvatarFallbackText>
           <AvatarImage source={{ uri: getAvatar() }} alt={getName()} />
         </Avatar>
         <View className="flex-1">

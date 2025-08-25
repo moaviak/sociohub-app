@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Event, EventStatus, EventVisibility } from "../types";
 import { HStack } from "@/components/ui/hstack";
-import { ActivityIndicator, Image } from "react-native";
+import { ActivityIndicator, Image, Dimensions } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { Badge, BadgeText } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,14 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { Icon } from "@/components/ui/icon";
-import { CirclePlus, TrashIcon, Ticket } from "lucide-react-native";
+import {
+  CirclePlus,
+  TrashIcon,
+  Ticket,
+  MapPin,
+  Laptop,
+  Calendar1,
+} from "lucide-react-native";
 import { useAppSelector } from "@/store/hooks";
 import { PRIVILEGES } from "@/constants";
 import { Advisor } from "@/types";
@@ -27,9 +34,11 @@ import { useRouter } from "expo-router";
 import { EventTicket } from "./event-ticket";
 import { useToastUtility } from "@/hooks/useToastUtility";
 
+const { width: screenWidth } = Dimensions.get("window");
+
 interface EventCardProps {
   event: Event;
-  variant?: "default" | "registered";
+  variant?: "default" | "registered" | "vertical";
 }
 
 export const EventCard = ({ event, variant = "default" }: EventCardProps) => {
@@ -68,6 +77,180 @@ export const EventCard = ({ event, variant = "default" }: EventCardProps) => {
         return { bg: "bg-gray-100/50", borderColor: "border-gray-400" };
     }
   };
+
+  // Vertical variant - compact card for horizontal scrolling
+  if (variant === "vertical") {
+    const cardWidth = screenWidth * 0.65; // 65% of screen width
+
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/event/[id]",
+            params: { id: event.id },
+          })
+        }
+        activeOpacity={0.8}
+      >
+        <Card
+          className="bg-white rounded-lg overflow-hidden p-0"
+          style={{
+            width: cardWidth,
+            minHeight: "100%",
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 1,
+            },
+            shadowOpacity: 0.08,
+            shadowRadius: 2,
+            elevation: 2, // For Android
+          }}
+        >
+          <VStack space="sm" className="flex-1">
+            {/* Image at top */}
+            <Image
+              source={
+                event.banner
+                  ? { uri: event.banner }
+                  : require("@/assets/images/image-placeholder.png")
+              }
+              alt={event.title}
+              style={{
+                width: "100%",
+                height: 140,
+                objectFit: "cover",
+              }}
+              defaultSource={require("@/assets/images/image-placeholder.png")}
+            />
+
+            {/* Content below image */}
+            <VStack
+              className="p-3 flex-1"
+              space="xs"
+              style={{ justifyContent: "space-between" }}
+            >
+              <VStack space="xs" style={{ alignItems: "flex-start" }}>
+                {/* Status Badge */}
+                {event.status && (
+                  <Badge
+                    size="sm"
+                    variant="outline"
+                    className={`rounded-md self-start ${
+                      getStatusBadgeColor(event.status).bg
+                    } ${getStatusBadgeColor(event.status).borderColor}`}
+                  >
+                    <BadgeText
+                      className={`text-xs ${
+                        event.status === EventStatus.Ongoing
+                          ? "text-primary-500"
+                          : event.status === EventStatus.Upcoming
+                          ? "text-secondary-500"
+                          : event.status === EventStatus.Completed
+                          ? "text-success-500"
+                          : "text-error-500"
+                      }`}
+                    >
+                      {event.status}
+                    </BadgeText>
+                  </Badge>
+                )}
+
+                {/* Title */}
+                <Text
+                  className="text-gray-900 font-semibold text-base"
+                  numberOfLines={2}
+                >
+                  {event.title}
+                </Text>
+
+                {/* Date and Time */}
+                {event.startDate &&
+                  event.startTime &&
+                  event.endDate &&
+                  event.endTime && (
+                    <Text className="text-sm text-gray-600" numberOfLines={2}>
+                      {formatEventDateTime(
+                        event.startDate,
+                        event.endDate,
+                        event.startTime,
+                        event.endTime
+                      )}
+                    </Text>
+                  )}
+
+                {/* Location/Platform */}
+                {event.eventType === "Physical"
+                  ? event.venueName && (
+                      <View className="flex-row gap-1 items-center">
+                        <Icon
+                          as={MapPin}
+                          size="sm"
+                          className="text-secondary-500"
+                        />
+                        <Text
+                          className="text-xs text-gray-500"
+                          numberOfLines={1}
+                        >
+                          {event.venueName}
+                        </Text>
+                      </View>
+                    )
+                  : event.platform && (
+                      <View className="flex-row gap-1 items-center">
+                        <Icon
+                          as={Laptop}
+                          size="sm"
+                          className="text-primary-500"
+                        />
+                        <Text
+                          className="text-xs text-gray-500"
+                          numberOfLines={1}
+                        >
+                          {event.platform}
+                        </Text>
+                      </View>
+                    )}
+
+                {/* Registration Deadline (if applicable) */}
+                {event.registrationRequired && event.registrationDeadline && (
+                  <View className="flex-row gap-1 items-center">
+                    <Icon as={Calendar1} size="sm" color="#ea580c" />
+                    <Text className="text-xs text-gray-500" numberOfLines={1}>
+                      Register by{" "}
+                      {new Date(
+                        event.registrationDeadline
+                      ).toLocaleDateString()}
+                    </Text>
+                  </View>
+                )}
+              </VStack>
+
+              {/* Bottom section - Price and Registration Status */}
+              <HStack className="justify-between items-center">
+                {event.ticketPrice && event.ticketPrice > 0 ? (
+                  <Text className="text-sm font-semibold text-gray-800">
+                    RS {event.ticketPrice}
+                  </Text>
+                ) : (
+                  <Text className="text-sm font-semibold text-green-600">
+                    Free
+                  </Text>
+                )}
+
+                {/* Registration status indicator */}
+                {event.isRegistered && (
+                  <Text className="text-xs text-green-600 font-medium">
+                    ✓ Registered
+                  </Text>
+                )}
+              </HStack>
+            </VStack>
+          </VStack>
+        </Card>
+      </TouchableOpacity>
+    );
+  }
 
   // Early return for registered variant - simpler UI without swipe functionality
   if (variant === "registered") {

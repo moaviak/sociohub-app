@@ -16,7 +16,7 @@ const TodoList = () => {
   const [isAddingNewTask, setIsAddingNewTask] = useState(false);
 
   useEffect(() => {
-    if (data && !("error" in data)) {
+    if (data) {
       setTasks(data as Task[]);
     }
   }, [data]);
@@ -78,7 +78,7 @@ const TodoList = () => {
   };
 
   return (
-    <View className="flex-1 bg-white py-4">
+    <View className="flex-1 bg-white py-4" style={{ paddingBottom: 52 }}>
       <View className="flex-1 px-4">{renderContent()}</View>
       <Fab size="lg" placement="bottom right" onPress={handleAddNewTask}>
         <FabIcon as={AddIcon} size="xl" />

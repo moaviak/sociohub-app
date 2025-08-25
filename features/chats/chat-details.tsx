@@ -160,7 +160,7 @@ const ChatDetails = () => {
             size="2xl"
             className="bg-gradient-to-br from-primary-500 to-secondary-600"
           >
-            <AvatarFallbackText>
+            <AvatarFallbackText className="text-white">
               {chatPartner.firstName + " " + chatPartner.lastName}
             </AvatarFallbackText>
             <AvatarImage source={{ uri: chatPartner.avatar }} />
@@ -222,7 +222,9 @@ const ChatDetails = () => {
                 size="xl"
                 className="bg-gradient-to-br from-primary-500 to-secondary-600"
               >
-                <AvatarFallbackText>{chat.name}</AvatarFallbackText>
+                <AvatarFallbackText className="text-white">
+                  {chat.name}
+                </AvatarFallbackText>
               </Avatar>
             )}
             <Text className="text-xl font-bold mt-2 text-center">

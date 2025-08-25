@@ -156,7 +156,9 @@ export const ChatItem = ({ chat, onPress }: ChatItemProps) => {
         activeOpacity={0.7}
       >
         <Avatar className="w-12 h-12">
-          <AvatarFallbackText>{getFallback()}</AvatarFallbackText>
+          <AvatarFallbackText className="text-white">
+            {getFallback()}
+          </AvatarFallbackText>
           <AvatarImage source={{ uri: getAvatar() }} alt={getName()} />
         </Avatar>
 

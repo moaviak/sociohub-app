@@ -31,8 +31,8 @@ export const PostStats: React.FC<PostStatsProps> = ({ post }) => {
               activeOpacity={0.7}
             >
               <HStack className="items-center mb-1" space="xs">
-                <Icon as={Ticket} size="sm" className="text-primary-500" />
-                <Text className="text-primary-500 font-semibold text-xs">
+                <Icon as={Ticket} className="text-primary-500" />
+                <Text className="text-primary-500 font-semibold text-sm">
                   {post.event.title}
                 </Text>
               </HStack>

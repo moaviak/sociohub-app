@@ -166,6 +166,14 @@ export default function AdvisorTabsLayout() {
     (state) => state.auth
   );
 
+  // Custom tab press handler to navigate to index route
+  const handleTabPress = (routeName: string) => {
+    return ({ defaultHandler }: { defaultHandler: () => void }) => {
+      // Always navigate to the index route when tab is pressed
+      router.push(`/(advisor-tabs)/${routeName}/` as any);
+    };
+  };
+
   // Handle navigation effects
   useEffect(() => {
     if (!isAuthChecked) {
@@ -249,6 +257,9 @@ export default function AdvisorTabsLayout() {
               />
             ),
           }}
+          listeners={{
+            tabPress: () => handleTabPress("home"),
+          }}
         />
         <Tabs.Screen
           name="members"
@@ -263,12 +274,18 @@ export default function AdvisorTabsLayout() {
               />
             ),
           }}
+          listeners={{
+            tabPress: () => handleTabPress("members"),
+          }}
         />
         <Tabs.Screen
           name="menu"
           options={{
             title: "Menu",
             tabBarIcon: () => <MenuTabIcon />,
+          }}
+          listeners={{
+            tabPress: () => handleTabPress("menu"),
           }}
         />
         <Tabs.Screen
@@ -284,6 +301,9 @@ export default function AdvisorTabsLayout() {
               />
             ),
           }}
+          listeners={{
+            tabPress: () => handleTabPress("events"),
+          }}
         />
         <Tabs.Screen
           name="profile"
@@ -297,6 +317,9 @@ export default function AdvisorTabsLayout() {
                 name="Profile"
               />
             ),
+          }}
+          listeners={{
+            tabPress: () => handleTabPress("profile"),
           }}
         />
       </Tabs>

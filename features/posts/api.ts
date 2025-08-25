@@ -3,6 +3,14 @@ import { Post, PostComment } from "./types";
 import { ApiResponse } from "@/store/api-response";
 import { ApiErrorResponse, createApiError } from "@/store/api-error";
 
+interface GetRecentPostsResponse {
+  posts: Post[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 export const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createPost: builder.mutation<Post, FormData>({
@@ -110,6 +118,43 @@ export const postApi = api.injectEndpoints({
       },
       providesTags: (_, __, { postId }) => [{ type: "Posts", id: postId }],
     }),
+    getRecentPosts: builder.infiniteQuery<
+      GetRecentPostsResponse,
+      { limit?: number },
+      number
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        maxPages: 3,
+        getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+          return lastPageParam < lastPage.totalPages
+            ? lastPageParam + 1
+            : undefined;
+        },
+        getPreviousPageParam: (_firstPage, _allPages, firstPageParam) => {
+          return firstPageParam > 1 ? firstPageParam - 1 : undefined;
+        },
+      },
+      query: ({ queryArg, pageParam }) => {
+        const { limit = 10 } = queryArg;
+        const params = new URLSearchParams({
+          page: pageParam.toString(),
+          limit: limit.toString(),
+        });
+
+        return {
+          url: `/cms?${params.toString()}`,
+        };
+      },
+      transformResponse: (response: ApiResponse<GetRecentPostsResponse>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      providesTags: [{ type: "Posts", id: "LIST" }],
+    }),
   }),
 });
 
@@ -122,4 +167,5 @@ export const {
   useUpdatePostMutation,
   useDeletePostMutation,
   useGetCommentsQuery,
+  useGetRecentPostsInfiniteQuery,
 } = postApi;

@@ -58,12 +58,6 @@ export default function SocietyLayout() {
         }}
       />
       <Stack.Screen
-        name="payments"
-        options={{
-          header: () => <SocietyHeader title="Payments" />,
-        }}
-      />
-      <Stack.Screen
         name="create-post"
         options={{
           header: () => <SocietyHeader title="Create Post" />,

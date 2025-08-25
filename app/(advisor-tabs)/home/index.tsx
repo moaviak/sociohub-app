@@ -1,20 +1,28 @@
+import UpcomingEvents from "@/features/events/upcoming-events";
+import SocietyHeader from "@/features/societies/society-header";
+import PendingTasks from "@/features/tasks/pending-tasks";
 import { useAppSelector } from "@/store/hooks";
-import { View, Text } from "react-native";
+import { Advisor } from "@/types";
+import { View, Text, ScrollView } from "react-native";
 
 const HomePage = () => {
   const { user } = useAppSelector((state) => state.auth);
 
+  if (!(user as Advisor).societyId) return null;
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontFamily: "Poppins-Bold", fontSize: 24 }}>
-        Home Page
-      </Text>
-      {user && (
-        <Text style={{ fontFamily: "Poppins-Regular", marginTop: 10 }}>
-          Welcome, {user.firstName || "User"}!
-        </Text>
-      )}
-    </View>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{ flex: 1, backgroundColor: "white" }}
+      contentContainerStyle={{
+        paddingBottom: 20,
+        gap: 16,
+      }}
+    >
+      <SocietyHeader societyId={(user as Advisor).societyId!} />
+      <PendingTasks />
+      <UpcomingEvents societyId={(user as Advisor).societyId!} />
+    </ScrollView>
   );
 };
 

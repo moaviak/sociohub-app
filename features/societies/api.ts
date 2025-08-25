@@ -3,6 +3,13 @@ import { ApiErrorResponse, createApiError } from "@/store/api-error";
 import { ApiResponse } from "@/store/api-response";
 import { JoinRequest, Society } from "@/types";
 
+interface SocietyKPIsResponse {
+  members: number;
+  activeEvents: number;
+  totalTeams: number;
+  upcomingEventRegistrations: number;
+}
+
 export const SocietiesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getSociety: builder.query<Society, { societyId: string }>({
@@ -111,6 +118,16 @@ export const SocietiesApi = api.injectEndpoints({
         }
       },
     }),
+    getSocietyKPIs: builder.query<SocietyKPIsResponse, string>({
+      query: (societyId) => `/society/${societyId}/kpis`,
+      transformResponse: (response: ApiResponse<SocietyKPIsResponse>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+    }),
   }),
 });
 
@@ -119,4 +136,5 @@ export const {
   useGetSocietiesQuery,
   useCancelJoinRequestMutation,
   useSendJoinRequestMutation,
+  useGetSocietyKPIsQuery,
 } = SocietiesApi;

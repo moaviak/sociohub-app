@@ -70,16 +70,6 @@ const getSocietyRoutes = (society: Society & { privileges: string[] }) => {
       icon: ShieldHalf,
       pathname: "/(student-tabs)/home/[societyId]/teams",
     },
-    ...(society.privileges.includes(PRIVILEGES.PAYMENT_FINANCE_MANAGEMENT)
-      ? [
-          {
-            key: "payments",
-            label: "Payments",
-            icon: CircleDollarSign,
-            pathname: "/(student-tabs)/home/[societyId]/payments",
-          },
-        ]
-      : []),
     ...(society.privileges.includes(PRIVILEGES.CONTENT_MANAGEMENT)
       ? [
           {

@@ -166,6 +166,14 @@ export default function StudentTabsLayout() {
     (state) => state.auth
   );
 
+  // Custom tab press handler to navigate to index route
+  const handleTabPress = (routeName: string) => {
+    return ({ defaultHandler }: { defaultHandler: () => void }) => {
+      // Always navigate to the index route when tab is pressed
+      router.push(`/(student-tabs)/${routeName}/` as any);
+    };
+  };
+
   // Handle navigation effects
   useEffect(() => {
     if (!isAuthChecked) {
@@ -249,6 +257,9 @@ export default function StudentTabsLayout() {
               />
             ),
           }}
+          listeners={{
+            tabPress: () => handleTabPress("home"),
+          }}
         />
         <Tabs.Screen
           name="explore"
@@ -263,12 +274,18 @@ export default function StudentTabsLayout() {
               />
             ),
           }}
+          listeners={{
+            tabPress: () => handleTabPress("explore"),
+          }}
         />
         <Tabs.Screen
           name="menu"
           options={{
             title: "Menu",
             tabBarIcon: () => <MenuTabIcon />,
+          }}
+          listeners={{
+            tabPress: () => handleTabPress("menu"),
           }}
         />
         <Tabs.Screen
@@ -284,6 +301,9 @@ export default function StudentTabsLayout() {
               />
             ),
           }}
+          listeners={{
+            tabPress: () => handleTabPress("chats"),
+          }}
         />
         <Tabs.Screen
           name="profile"
@@ -297,6 +317,9 @@ export default function StudentTabsLayout() {
                 name="Profile"
               />
             ),
+          }}
+          listeners={{
+            tabPress: () => handleTabPress("profile"),
           }}
         />
       </Tabs>

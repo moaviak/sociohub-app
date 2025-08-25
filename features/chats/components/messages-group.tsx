@@ -23,7 +23,7 @@ export const MessagesGroup: React.FC<MessagesGroupProps> = ({
       className={cn("w-full flex-row gap-2", isSender && "flex-row-reverse")}
     >
       <Avatar size="sm">
-        <AvatarFallbackText>
+        <AvatarFallbackText className="text-white">
           {`${senderUser?.firstName?.[0] || ""}${
             senderUser?.lastName?.[0] || ""
           }`}

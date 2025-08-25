@@ -47,7 +47,8 @@ export const CommentsActionSheet: React.FC<CommentsActionSheetProps> = ({
 }) => {
   const [comment, setComment] = useState("");
   const { data: comments, isLoading: isFetchingComments } = useGetCommentsQuery(
-    { postId: post.id }
+    { postId: post.id },
+    { skip: !isOpen }
   );
   const [addComment, { isLoading }] = useAddCommentMutation();
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -88,7 +89,7 @@ export const CommentsActionSheet: React.FC<CommentsActionSheetProps> = ({
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
           <View className="justify-between">
-            <ScrollView className="w-full" style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1 }}>
               {isFetchingComments && (
                 <View className="flex-1 justify-center items-center bg-gray-50">
                   <ActivityIndicator size="large" color="#3b82f6" />
@@ -102,28 +103,35 @@ export const CommentsActionSheet: React.FC<CommentsActionSheetProps> = ({
                   const author =
                     comment.author.student || comment.author.advisor!;
                   return (
-                    <View
-                      key={comment.id}
-                      className="w-full flex-row gap-3 py-2"
-                    >
+                    <View key={comment.id} className="flex-row gap-3 py-2">
                       <Avatar
                         className="bg-gradient-to-br from-primary-500 to-secondary-600"
                         style={{ width: 32, height: 32 }}
                       >
-                        <AvatarFallbackText>
+                        <AvatarFallbackText className="text-white">
                           {author?.firstName} {author?.lastName}
                         </AvatarFallbackText>
                         <AvatarImage source={{ uri: author?.avatar }} />
                       </Avatar>
                       <View className="gap-1">
-                        <Text className="font-medium text-xs" numberOfLines={1}>
-                          {author.firstName} {author.lastName}
+                        <View className="flex-row items-center gap-2">
+                          <Text
+                            className="font-medium text-xs"
+                            numberOfLines={1}
+                          >
+                            {author.firstName} {author.lastName}
+                          </Text>
+                          <Text className="text-xs text-gray-600">
+                            {multiFormatDateString(comment.createdAt, true)}
+                          </Text>
+                        </View>
+                        <Text
+                          className="text-gray-600"
+                          style={{ paddingRight: 12 }}
+                        >
+                          {comment.content}
                         </Text>
-                        <Text className="text-gray-600">{comment.content}</Text>
                       </View>
-                      <Text className="text-xs text-gray-600">
-                        {multiFormatDateString(comment.createdAt, true)}
-                      </Text>
                     </View>
                   );
                 })}
