@@ -1,4 +1,9 @@
 import {
+  setAgentThought,
+  setToolStatus,
+  ToolStatus,
+} from "@/features/chatbot/slice";
+import {
   addMessageWithRefresh,
   deleteMessage,
   handleChatDeletionOrLeave,
@@ -126,6 +131,15 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       socket.on("stop-typing", ({ chatId, userId }) => {
         dispatch(stopTyping({ chatId, userId }));
+      });
+
+      // Chat-Bot Events
+      socket.on("tool_status", (toolStatus: ToolStatus) => {
+        dispatch(setToolStatus(toolStatus));
+      });
+
+      socket.on("agent_thought", ({ thought }) => {
+        dispatch(setAgentThought(thought));
       });
 
       // Listen for connection errors

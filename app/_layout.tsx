@@ -3,7 +3,7 @@ import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, ReactNode } from "react";
+import { useEffect, ReactNode, useCallback } from "react";
 import "react-native-reanimated";
 
 import "@/global.css";
@@ -27,6 +27,7 @@ import {
 } from "@/features/notifications/push-notifications";
 import { cn } from "@/lib/utils";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useCreateSessionMutation } from "@/features/chatbot/api";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -56,6 +57,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     skip: (!accessToken && !refreshToken && !isRefreshing) || isTokenLoading,
     refetchOnMountOrArgChange: true,
   });
+  const { sessionId, isLoading: isCreatingSession } = useAppSelector(
+    (state) => state.chatBot
+  );
+  const [createSession] = useCreateSessionMutation();
 
   // Try to refresh token if we have a refresh token but no access token
   useEffect(() => {
@@ -155,6 +160,20 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     },
   });
+
+  const initializeSession = useCallback(async () => {
+    try {
+      await createSession().unwrap();
+    } catch (error) {
+      console.error("Failed to create chatbot session:", error);
+    }
+  }, [createSession]);
+
+  useEffect(() => {
+    if (!sessionId && !isCreatingSession) {
+      initializeSession();
+    }
+  }, [sessionId, initializeSession, isCreatingSession]);
 
   return children;
 };

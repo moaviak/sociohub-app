@@ -43,6 +43,20 @@ const MenuPage = () => {
           </TouchableOpacity>
           <View className="w-full h-0.5 bg-neutral-200" />
         </View>
+        <View className="gap-2">
+          <TouchableOpacity
+            onPress={() => router.push("/(student-tabs)/menu/socio-bot")}
+          >
+            <View className="flex-row items-center gap-4 px-4 py-2">
+              <Image
+                source={require("@/assets/icons/bot.png")}
+                className="h-[32px] w-[32px]"
+              />
+              <Text className="font-body font-semibold text-lg">SocioBot</Text>
+            </View>
+          </TouchableOpacity>
+          <View className="w-full h-0.5 bg-neutral-200" />
+        </View>
       </VStack>
     </View>
   );

@@ -5,6 +5,7 @@ import NotificationsReducer from "@/features/notifications/slice";
 import ChatsReducer from "@/features/chats/slice";
 import { api } from "./api";
 import AuthReducer from "./auth/slice";
+import ChatBotReducer from "@/features/chatbot/slice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     auth: AuthReducer,
     notifications: NotificationsReducer,
     chats: ChatsReducer,
+    chatBot: ChatBotReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware),

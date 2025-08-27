@@ -4,6 +4,7 @@ import { useAppSelector } from "@/store/hooks";
 import { Advisor } from "@/types";
 import { useRouter } from "expo-router";
 import {
+  Bot,
   Building,
   CircleDollarSign,
   ImagePlus,
@@ -58,6 +59,12 @@ const MenuPage = () => {
       label: "Society Settings",
       icon: Settings,
       pathname: "/(advisor-tabs)/menu/settings",
+    },
+    {
+      key: "sociobot",
+      label: "SocioBot",
+      icon: Bot,
+      pathname: "/(advisor-tabs)/menu/socio-bot",
     },
   ];
 
