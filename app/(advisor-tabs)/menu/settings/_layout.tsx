@@ -1,14 +1,13 @@
 import { Header } from "@/app/_layout";
 import { Stack } from "expo-router";
-import { SocietyHeader } from "../_layout";
 
-export default function SettingsLayout() {
+const SettingsLayout = () => {
   return (
     <Stack>
       <Stack.Screen
         name="index"
         options={{
-          header: () => <SocietyHeader title="Society Settings" />,
+          header: () => <Header title="Society Settings" backButton />,
         }}
       />
       <Stack.Screen
@@ -27,4 +26,5 @@ export default function SettingsLayout() {
       />
     </Stack>
   );
-}
+};
+export default SettingsLayout;

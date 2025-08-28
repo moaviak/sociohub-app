@@ -64,12 +64,6 @@ const getSocietyRoutes = (society: Society & { privileges: string[] }) => {
       icon: Megaphone,
       pathname: "/(student-tabs)/home/[societyId]/announcements",
     },
-    {
-      key: "teams",
-      label: "Teams",
-      icon: ShieldHalf,
-      pathname: "/(student-tabs)/home/[societyId]/teams",
-    },
     ...(society.privileges.includes(PRIVILEGES.CONTENT_MANAGEMENT)
       ? [
           {

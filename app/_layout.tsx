@@ -170,7 +170,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [createSession]);
 
   useEffect(() => {
-    if (!sessionId && !isCreatingSession) {
+    if (!sessionId && !isCreatingSession && isAuthenticated) {
       initializeSession();
     }
   }, [sessionId, initializeSession, isCreatingSession]);

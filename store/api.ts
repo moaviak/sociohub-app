@@ -103,7 +103,6 @@ export const api = createApi({
     "PaymentIntent",
     "Chat",
     "Posts",
-    "Teams",
     "TeamRequests",
   ],
   endpoints: (builder) => ({

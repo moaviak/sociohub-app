@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 import { DrawerToggleButton } from "@react-navigation/drawer";
 import { useAppSelector } from "@/store/hooks";
 
-const SocietyHeader = ({ title }: { title: string }) => {
+export const SocietyHeader = ({ title }: { title: string }) => {
   const { societyId } = useLocalSearchParams();
   const { user } = useAppSelector((state) => state.auth);
   const societies = user && "registrationNumber" in user ? user.societies : [];
@@ -52,12 +52,6 @@ export default function SocietyLayout() {
         }}
       />
       <Stack.Screen
-        name="teams"
-        options={{
-          header: () => <SocietyHeader title="Teams" />,
-        }}
-      />
-      <Stack.Screen
         name="create-post"
         options={{
           header: () => <SocietyHeader title="Create Post" />,
@@ -66,7 +60,7 @@ export default function SocietyLayout() {
       <Stack.Screen
         name="settings"
         options={{
-          header: () => <SocietyHeader title="Society Settings" />,
+          headerShown: false,
         }}
       />
     </Stack>

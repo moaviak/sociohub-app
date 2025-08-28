@@ -30,6 +30,12 @@ export default function MenuLayout() {
           header: () => <Header title="SocioBot" backButton />,
         }}
       />
+      <Stack.Screen
+        name="settings"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

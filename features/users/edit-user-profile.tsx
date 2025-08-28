@@ -84,7 +84,7 @@ const EditUserProfile = () => {
       contentContainerStyle={{ paddingBottom: 20 }}
     >
       <VStack space="md" className="p-6">
-        <FormControl isInvalid={!!form.formState.errors.avatar} isRequired>
+        <FormControl isInvalid={!!form.formState.errors.avatar}>
           <Controller
             control={form.control}
             name="avatar"

@@ -9,6 +9,7 @@ import {
   setSociety,
   verifyEmail,
 } from "./slice";
+import { clearSession } from "@/features/chatbot/slice";
 
 export const AuthApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -143,6 +144,7 @@ export const AuthApi = api.injectEndpoints({
         queryFulfilled.then(() => {
           dispatch(logout());
           dispatch(api.util.resetApiState());
+          dispatch(clearSession());
         });
       },
     }),

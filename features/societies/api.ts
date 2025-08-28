@@ -128,6 +128,54 @@ export const SocietiesApi = api.injectEndpoints({
         return createApiError(errorResponse.message);
       },
     }),
+    updateSocietySettings: builder.mutation<
+      Society,
+      { societyId: string; acceptingNewMembers: boolean; membersLimit: number }
+    >({
+      query: ({ societyId, acceptingNewMembers, membersLimit }) => ({
+        url: `/society/settings/${societyId}`,
+        method: "PATCH",
+        body: { acceptingNewMembers, membersLimit },
+      }),
+      transformResponse: (response: ApiResponse<Society>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      invalidatesTags: (result) => {
+        if (result) {
+          return [{ type: "Societies", id: result.id }];
+        } else {
+          return [];
+        }
+      },
+    }),
+    updateSocietyProfile: builder.mutation<
+      Society,
+      { societyId: string; formData: FormData }
+    >({
+      query: ({ societyId, formData }) => ({
+        url: `/society/profile/${societyId}`,
+        method: "PATCH",
+        body: formData,
+      }),
+      transformResponse: (response: ApiResponse<Society>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      invalidatesTags: (result) => {
+        if (result) {
+          return [{ type: "Societies", id: result.id }];
+        } else {
+          return [];
+        }
+      },
+    }),
   }),
 });
 
@@ -137,4 +185,6 @@ export const {
   useCancelJoinRequestMutation,
   useSendJoinRequestMutation,
   useGetSocietyKPIsQuery,
+  useUpdateSocietyProfileMutation,
+  useUpdateSocietySettingsMutation,
 } = SocietiesApi;
