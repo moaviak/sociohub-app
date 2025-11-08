@@ -1,28 +1,28 @@
 import { View, Text, ScrollView, Image } from "react-native";
-import { useGetEventsQuery, useGetSocietyEventsQuery } from "./api";
+import {
+  useGetEventsInfiniteQuery,
+  useGetSocietyEventsInfiniteQuery,
+} from "./api";
 import { EventCard } from "./components/event-card";
 import { Link } from "expo-router";
 
 const UpcomingEvents: React.FC<{ societyId?: string }> = ({ societyId }) => {
-  const { data: events } = useGetEventsQuery(
+  const { data, isLoading } = useGetEventsInfiniteQuery(
     {
       limit: 3,
       status: "Upcoming",
     },
-    {
-      skip: !!societyId,
-    }
+    { skip: !!societyId }
   );
+  const events =
+    data?.pages.flat().flatMap((response) => response.events) ?? [];
 
-  const { data: societyEvents } = useGetSocietyEventsQuery(
-    {
-      societyId: societyId || "",
-      status: "Upcoming",
-    },
-    {
-      skip: !societyId,
-    }
-  );
+  const { data: societyResponse } = useGetSocietyEventsInfiniteQuery({
+    societyId: societyId || "",
+    status: "Upcoming",
+  });
+  const societyEvents =
+    societyResponse?.pages.flat().flatMap((response) => response.events) ?? [];
 
   return (
     <View>

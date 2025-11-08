@@ -33,6 +33,14 @@ export interface CreateCheckoutSessionResponse {
   sessionId: string;
 }
 
+interface GetEventsResponse {
+  events: Event[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export const EventsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     scanTicket: builder.mutation<
@@ -61,38 +69,63 @@ export const EventsApi = api.injectEndpoints({
         );
       },
     }),
-    getSocietyEvents: builder.query<
-      Event[],
+    getSocietyEvents: builder.infiniteQuery<
+      GetEventsResponse,
       {
         societyId: string;
         status?: string;
         categories?: string;
         search?: string;
-      }
+        limit?: number;
+        page?: number;
+      },
+      number
     >({
-      query: ({ societyId, status = "", categories = "", search = "" }) => ({
-        url: `/events?societyId=${societyId}&status=${status}&categories=${categories}&search=${search}`,
-      }),
-      transformResponse: (response: ApiResponse<Event[]>) => {
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        maxPages: 10,
+        getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+          // Now we have access to full pagination info
+          if (lastPage && !("error" in lastPage)) {
+            return lastPageParam < lastPage.totalPages
+              ? lastPageParam + 1
+              : undefined;
+          }
+          return undefined;
+        },
+        getPreviousPageParam: (_firstPage, _allPages, firstPageParam) => {
+          return firstPageParam > 1 ? firstPageParam - 1 : undefined;
+        },
+      },
+      query: ({ queryArg, pageParam }) => {
+        const {
+          societyId,
+          status = "",
+          categories = "",
+          search = "",
+          limit = 10,
+        } = queryArg;
+        const params = new URLSearchParams({
+          page: pageParam?.toString() || "1",
+          pageSize: limit?.toString() || "10",
+          societyId: societyId.toString(),
+        });
+
+        if (status) params.append("status", status);
+        if (categories) params.append("categories", categories);
+        if (search) params.append("search", search);
+        return {
+          url: `/events?${params.toString()}`,
+        };
+      },
+      transformResponse: (response: ApiResponse<GetEventsResponse>) => {
         return response.data;
       },
       transformErrorResponse: (response) => {
         const errorResponse = response.data as ApiErrorResponse;
         return createApiError(errorResponse.message);
       },
-      providesTags: (result) => {
-        if (result && !("error" in result)) {
-          return [
-            ...result.map((event) => ({
-              type: "Events" as const,
-              id: event.id,
-            })),
-            { type: "Events", id: "LIST" },
-          ];
-        } else {
-          return [];
-        }
-      },
+      providesTags: ["Events"],
     }),
     getEventById: builder.query<Event, string>({
       query: (id) => ({
@@ -227,30 +260,60 @@ export const EventsApi = api.injectEndpoints({
         }
       },
     }),
-    getEvents: builder.query<
-      Event[],
-      { status?: string; categories?: string; search?: string; limit?: number }
+    getEvents: builder.infiniteQuery<
+      GetEventsResponse,
+      {
+        status?: string;
+        categories?: string;
+        search?: string;
+        limit?: number;
+        page?: number;
+      },
+      number
     >({
-      query: ({ status = "", categories = "", search = "", limit = "" }) => ({
-        url: `/events?status=${status}&categories=${categories}&search=${search}&limit=${limit}`,
-      }),
-      transformResponse: (response: ApiResponse<Event[]>) => {
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        maxPages: 10,
+        getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+          // Now we have access to full pagination info
+          if (lastPage && !("error" in lastPage)) {
+            return lastPageParam < lastPage.totalPages
+              ? lastPageParam + 1
+              : undefined;
+          }
+          return undefined;
+        },
+        getPreviousPageParam: (_firstPage, _allPages, firstPageParam) => {
+          return firstPageParam > 1 ? firstPageParam - 1 : undefined;
+        },
+      },
+      query: ({ queryArg, pageParam }) => {
+        const {
+          status = "",
+          categories = "",
+          search = "",
+          limit = 10,
+        } = queryArg;
+        const params = new URLSearchParams({
+          page: pageParam?.toString() || "1",
+          pageSize: limit?.toString() || "10",
+        });
+
+        if (status) params.append("status", status);
+        if (categories) params.append("categories", categories);
+        if (search) params.append("search", search);
+        return {
+          url: `/events?${params.toString()}`,
+        };
+      },
+      transformResponse: (response: ApiResponse<GetEventsResponse>) => {
         return response.data;
       },
       transformErrorResponse: (response) => {
         const errorResponse = response.data as ApiErrorResponse;
         return createApiError(errorResponse.message);
       },
-      providesTags: (result) => {
-        if (result && !("error" in result)) {
-          return [
-            ...result.map(({ id }) => ({ type: "Events" as const, id })),
-            { type: "Events", id: "LIST" },
-          ];
-        } else {
-          return [];
-        }
-      },
+      providesTags: ["Events"],
     }),
     createCheckoutSession: builder.mutation<
       CreateCheckoutSessionResponse,
@@ -276,13 +339,13 @@ export const EventsApi = api.injectEndpoints({
 
 export const {
   useScanTicketMutation,
-  useGetSocietyEventsQuery,
+  useGetSocietyEventsInfiniteQuery,
   useGetEventByIdQuery,
   useUpdateEventMutation,
   useRegisterForEventMutation,
   useDeleteEventMutation,
   useCancelEventMutation,
   useGetMyRegistrationsQuery,
-  useGetEventsQuery,
+  useGetEventsInfiniteQuery,
   useCreateCheckoutSessionMutation,
 } = EventsApi;

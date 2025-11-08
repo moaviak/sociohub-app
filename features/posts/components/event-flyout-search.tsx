@@ -11,7 +11,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import { Input, InputField, InputIcon } from "@/components/ui/input";
 import { Search, X } from "lucide-react-native";
 import { formatEventDateTime } from "@/lib/utils";
-import { useGetSocietyEventsQuery } from "@/features/events/api";
+import { useGetSocietyEventsInfiniteQuery } from "@/features/events/api";
 import { Event } from "@/features/events/types";
 
 interface EventFlyoutSearchProps {
@@ -32,16 +32,19 @@ export const EventFlyoutSearch: React.FC<EventFlyoutSearchProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const debouncedSetSearch = useDebounceCallback(setSearch, 300);
 
-  const { data, isFetching } = useGetSocietyEventsQuery(
+  const { data, isFetching } = useGetSocietyEventsInfiniteQuery(
     {
       societyId: societyId || "",
       search,
       status: "Past",
+      limit: 5,
+      page: 1,
     },
     { skip: !search }
   );
 
-  const events = data && !("error" in data) ? data : [];
+  const events =
+    data?.pages.flat().flatMap((response) => response.events) ?? [];
 
   const handleInputChange = (text: string) => {
     setInput(text);
