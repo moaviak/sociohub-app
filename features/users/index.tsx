@@ -275,7 +275,10 @@ const Profile = ({ userId }: { userId: string }) => {
                     onPress={() => {
                       // Navigate to society detail
                       // navigation.navigate('SocietyDetail', { societyId: society.id });
-                      console.log("Navigate to society:", society.id);
+                      router.push({
+                        pathname: "/society/[id]",
+                        params: { id: society.id },
+                      });
                     }}
                   />
                 ))}
@@ -303,7 +306,10 @@ const Profile = ({ userId }: { userId: string }) => {
                   onPress={() => {
                     // Navigate to society detail
                     // navigation.navigate('SocietyDetail', { societyId: user.society.id });
-                    console.log("Navigate to society:", user.society?.id);
+                    router.push({
+                      pathname: "/society/[id]",
+                      params: { id: user.society!.id },
+                    });
                   }}
                 />
               </View>

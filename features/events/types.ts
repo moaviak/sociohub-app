@@ -95,3 +95,11 @@ export interface Ticket {
   scannedAt?: string;
   scannedBy?: Student;
 }
+
+export interface EventInvitation {
+  id: string;
+  eventId: string;
+  studentId: string;
+  sentAt: string;
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
+}

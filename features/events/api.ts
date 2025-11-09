@@ -2,7 +2,7 @@ import { api } from "@/store/api";
 import { ApiErrorResponse, createApiError } from "@/store/api-error";
 import { ApiResponse } from "@/store/api-response";
 import { Ticket } from "@/types";
-import { Event, Registration } from "./types";
+import { Event, EventInvitation, Registration } from "./types";
 
 export interface EventRegistrationResponse {
   registration: Registration;
@@ -334,6 +334,61 @@ export const EventsApi = api.injectEndpoints({
         return createApiError(errorResponse.message);
       },
     }),
+    inviteStudents: builder.mutation<
+      EventInvitation[],
+      { societyId: string; eventId: string; studentIds: string[] }
+    >({
+      query: ({ eventId, societyId, studentIds }) => ({
+        url: `/events/${eventId}/invite?societyId=${societyId}`,
+        method: "POST",
+        body: { studentIds },
+      }),
+      transformResponse: (response: ApiResponse<EventInvitation[]>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      invalidatesTags: (_, __, arg) => [{ type: "Events", id: arg.eventId }],
+    }),
+    getMyInvites: builder.query<Event[], void>({
+      query: () => "/events/my-invitations",
+      transformResponse: (response: ApiResponse<Event[]>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      providesTags: (result) => {
+        if (result) {
+          return [
+            { type: "Events", id: "LIST" },
+            ...result.map((event) => ({
+              type: "Events" as const,
+              id: event.id,
+            })),
+          ];
+        } else {
+          return [];
+        }
+      },
+    }),
+    rejectInvite: builder.mutation<void, { eventId: string }>({
+      query: ({ eventId }) => ({
+        url: `/events/${eventId}/reject-invite`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponse<void>) => {
+        return response.data;
+      },
+      transformErrorResponse: (response) => {
+        const errorResponse = response.data as ApiErrorResponse;
+        return createApiError(errorResponse.message);
+      },
+      invalidatesTags: (_, __, arg) => [{ type: "Events", id: arg.eventId }],
+    }),
   }),
 });
 
@@ -348,4 +403,7 @@ export const {
   useGetMyRegistrationsQuery,
   useGetEventsInfiniteQuery,
   useCreateCheckoutSessionMutation,
+  useInviteStudentsMutation,
+  useGetMyInvitesQuery,
+  useRejectInviteMutation,
 } = EventsApi;

@@ -38,10 +38,21 @@ const { width: screenWidth } = Dimensions.get("window");
 
 interface EventCardProps {
   event: Event;
-  variant?: "default" | "registered" | "vertical";
+  variant?: "default" | "registered" | "vertical" | "invited";
+  onAccept?: () => void;
+  onReject?: () => void;
+  isAccepting?: boolean;
+  isRejecting?: boolean;
 }
 
-export const EventCard = ({ event, variant = "default" }: EventCardProps) => {
+export const EventCard = ({
+  event,
+  variant = "default",
+  onAccept,
+  onReject,
+  isAccepting,
+  isRejecting,
+}: EventCardProps) => {
   const toast = useToastUtility();
   const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
@@ -336,6 +347,88 @@ export const EventCard = ({ event, variant = "default" }: EventCardProps) => {
             setOpen={setShowTicket}
           />
         )}
+      </>
+    );
+  }
+
+  // Early return for invited variant - similar UI to "registered", but with Accept/Reject buttons
+  if (variant === "invited") {
+    return (
+      <>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/event/[id]",
+              params: { id: event.id },
+            })
+          }
+          activeOpacity={0.8}
+        >
+          <Card className="bg-white rounded-lg shadow-gray-300 shadow-md overflow-hidden p-0">
+            <HStack className="" style={{ height: 120 }} space="md">
+              <Image
+                source={
+                  event.banner
+                    ? { uri: event.banner }
+                    : require("@/assets/images/image-placeholder.png")
+                }
+                alt={event.title}
+                style={{ width: 100, height: "100%", objectFit: "cover" }}
+                defaultSource={require("@/assets/images/image-placeholder.png")}
+              />
+              <VStack
+                className="p-2"
+                style={{ flex: 1, justifyContent: "space-between" }}
+              >
+                <VStack>
+                  <Text
+                    className="text-gray-900 font-semibold text-base"
+                    numberOfLines={2}
+                  >
+                    {event.title}
+                  </Text>
+                  {event.startDate &&
+                    event.startTime &&
+                    event.endDate &&
+                    event.endTime && (
+                      <Text className="text-sm text-gray-600" numberOfLines={2}>
+                        {formatEventDateTime(
+                          event.startDate,
+                          event.endDate,
+                          event.startTime,
+                          event.endTime
+                        )}
+                      </Text>
+                    )}
+                </VStack>
+                <HStack space="sm">
+                  <TouchableOpacity
+                    className="bg-success-500 px-3 py-2 rounded-md flex-row items-center justify-center"
+                    onPress={
+                      typeof onAccept === "function" ? onAccept : undefined
+                    }
+                    disabled={isAccepting}
+                  >
+                    <Text className="text-white text-sm font-medium">
+                      Accept
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className="bg-error-500 px-3 py-2 rounded-md flex-row items-center justify-center ml-2"
+                    onPress={
+                      typeof onReject === "function" ? onReject : undefined
+                    }
+                    disabled={isRejecting}
+                  >
+                    <Text className="text-white text-sm font-medium">
+                      Reject
+                    </Text>
+                  </TouchableOpacity>
+                </HStack>
+              </VStack>
+            </HStack>
+          </Card>
+        </TouchableOpacity>
       </>
     );
   }

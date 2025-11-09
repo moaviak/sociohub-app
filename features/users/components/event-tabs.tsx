@@ -12,19 +12,7 @@ import {
   Animated,
 } from "react-native";
 import { MyEvents } from "@/features/events/my-events";
-
-export const InvitedEvents = () => {
-  return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="p-4">
-        <Text className="text-lg font-semibold mb-4">Invited Events</Text>
-        <Text className="text-gray-600">
-          The feature will be soon available.
-        </Text>
-      </View>
-    </ScrollView>
-  );
-};
+import { InvitedEvents } from "@/features/events/invited-events";
 
 export const EventTabs = () => {
   const layout = useWindowDimensions();
